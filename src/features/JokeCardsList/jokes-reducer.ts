@@ -10,11 +10,13 @@ export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {disp
         // handleServerNetworkError(e, dispatch)
     }
 })
-
-export const refreshJokeT = createAsyncThunk('jokes/refreshJokeT', async ({id}:{id: number}, {dispatch}) => {
-    const res = await jokesAPI.getOneJoke()
+export const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {dispatch}) => {
+    let res = await jokesAPI.getOneJoke()
+    if (res.data.id === id) {
+        res = await jokesAPI.getOneJoke()
+    }
     try {
-        dispatch(refreshJoke({id, joke: {...res.data}}))
+        dispatch(changeJoke({id, joke: {...res.data}}))
     } catch (e: any) {
         console.log(e)
         // handleServerNetworkError(e, dispatch)
@@ -29,9 +31,9 @@ export const slice = createSlice({
     name: 'jokes',
     initialState: initialState,
     reducers: {
-        setJokes(state, action: PayloadAction<{ jokes: Array<JokeType> }>) {
+        setJokes(state, action: PayloadAction<{ jokes: JokeType[] }>) {
             return {
-                ...state, ...action.payload,
+                ...state, jokes: state.jokes.concat(action.payload.jokes)
             }
         },
         deleteJoke(state, action: PayloadAction<{ id: number }>) {
@@ -39,12 +41,12 @@ export const slice = createSlice({
             const index = state.jokes.findIndex(j => j.id === action.payload.id)
             state.jokes.splice(index, 1)
         },
-        refreshJoke(state, action: PayloadAction<{ joke: JokeType, id: number }>) {
+        changeJoke(state, action: PayloadAction<{ joke: JokeType, id: number }>) {
             const index = state.jokes.findIndex( j => j.id === action.payload.id)
             state.jokes.splice(index, 1, action.payload.joke)
         }
     }
 })
 
-export const {refreshJoke,setJokes, deleteJoke} = slice.actions
+export const {changeJoke,setJokes, deleteJoke} = slice.actions
 export const jokesReducer = slice.reducer

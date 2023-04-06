@@ -1,9 +1,7 @@
 import {combineReducers} from 'redux'
-import thunkMiddleware from 'redux-thunk'
 import {configureStore} from "@reduxjs/toolkit";
 import {appReducer} from "./app-reducer";
 import {jokesReducer} from "../features/JokeCardsList/jokes-reducer";
-
 
 const rootReducer = combineReducers({
     app: appReducer,
@@ -12,7 +10,7 @@ const rootReducer = combineReducers({
 
 export const store = configureStore({
     reducer: rootReducer,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(thunkMiddleware)
 })
 
+export type AppDispatch = typeof store.dispatch;
 export type RootStateType = ReturnType<typeof rootReducer>

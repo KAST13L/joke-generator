@@ -1,19 +1,18 @@
 import React, {useState} from 'react';
 import {JokeType} from "../../api/jokes-api";
 import {Box, Paper} from "@mui/material";
-import {useDispatch} from "react-redux";
-import {deleteJoke, refreshJokeT} from "../JokeCardsList/jokes-reducer";
+import {deleteJoke, refreshJoke} from "../JokeCardsList/jokes-reducer";
+import {useAppDispatch} from "../../hooks/hooks";
 
 export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline}) => {
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
     const [isShow, setIsShow] = useState<boolean>(false)
 
     const deleteJokeHandler = () => {
         dispatch(deleteJoke({id}))
     }
     const refreshJokeHandler = () => {
-        // @ts-ignore
-        dispatch(refreshJokeT({id}))
+        dispatch(refreshJoke(id))
     }
 
     return (
@@ -41,7 +40,7 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline}) => {
             </Box>
             {isShow && <Box sx={{position: 'absolute', bottom: '5px'}}>
                 <button onClick={deleteJokeHandler}>delete</button>
-                <button >add</button>
+                <button>add</button>
                 <button onClick={refreshJokeHandler}>refresh</button>
             </Box>}
         </Paper>
