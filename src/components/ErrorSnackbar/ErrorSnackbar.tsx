@@ -13,7 +13,7 @@ export function ErrorSnackbar() {
 
     const severity: AlertColor = error ? 'error' : 'success'
     const message = error ? error : success
-    const visualTime = error ? 6000 : 2000
+    const visualTime = error ? 6000 : 3000
 
     const handleClose = async () => {
         success && dispatch(setAppSuccess({success: null}))

@@ -13,6 +13,8 @@ export const jokesAPI = {
     }
 }
 
+// types
+
 export interface JokeAPIType {
     id: number
     type: string
@@ -21,3 +23,8 @@ export interface JokeAPIType {
 }
 
 export type JokeType = JokeAPIType & {favorite: boolean}
+
+export type ResponseServerErrorType = {
+    type: string,
+    message: string
+}

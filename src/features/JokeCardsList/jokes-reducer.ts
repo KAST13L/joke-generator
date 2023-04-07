@@ -2,19 +2,23 @@ import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {jokesAPI, JokeType} from "../../api/jokes-api";
 import {RootStateType} from "../../app/store";
 import {getFavoriteJokes, saveFavoriteJokes} from "../../utils/localeStorage";
-import {MAX_JOKES_COUNT} from "../../variables";
+import {MAX_JOKES_COUNT, STATUS} from "../../variables";
+import {setAppError, setAppStatus, setAppSuccess} from "../../app/app-reducer";
+import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
 
 export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
     dispatch,
     getState
 }) => {
+    dispatch(setAppStatus({status: STATUS.LOADING}))
+
     const res = await jokesAPI.getJokes()
     let jokes: JokeType[] = res.data.map(j => ({...j, favorite: false}))
     const getIdsNewJokes = jokes.map(j => j.id)
 
     const state = getState() as RootStateType
     const getIdsCurrentJokes = state.jokes.jokes.map(j => j.id)
-    if(!state.jokes.jokes.length) {
+    if (!state.jokes.jokes.length) {
         jokes = getFavoriteJokes().concat(jokes)
         jokes = jokes.filter((j, index) => index < MAX_JOKES_COUNT)
     }
@@ -24,9 +28,12 @@ export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
     if (!intersection.length) {
         try {
             dispatch(setJokes({jokes}))
+            dispatch(setAppStatus({status: STATUS.SUCCEEDED}))
+            dispatch(setAppSuccess({success: 'Jokes received'}))
         } catch (e: any) {
-            console.log(e)
-            // handleServerNetworkError(e, dispatch)
+            handleServerAppError(e, dispatch)
+        } finally {
+            dispatch(setAppStatus({status: STATUS.IDLE}))
         }
     } else {
         dispatch(updateRepeatingIdsOfJokesList({repeatingJokesCount: intersection.length}))
@@ -35,6 +42,8 @@ export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
 })
 
 export const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {dispatch}) => {
+
+    dispatch(setAppStatus({status: STATUS.LOADING}))
 
     let prevState: JokeType[] = getFavoriteJokes()
     if (prevState.some(j => j.id === id)) {
@@ -46,9 +55,12 @@ export const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: numb
     if (res.data.id !== id) {
         try {
             dispatch(changeJoke({id, joke: {...res.data, favorite: false}}))
+            dispatch(setAppStatus({status: STATUS.SUCCEEDED}))
+            dispatch(setAppSuccess({success:'Joke refreshed'}))
         } catch (e: any) {
-            console.log(e)
-            // handleServerNetworkError(e, dispatch)
+            handleServerNetworkError(e, dispatch)
+        } finally {
+            dispatch(setAppStatus({status: STATUS.IDLE}))
         }
     } else {
         dispatch(refreshJoke(id))
@@ -57,6 +69,8 @@ export const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: numb
 
 export const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch}) => {
 
+    dispatch(setAppStatus({status: STATUS.LOADING}))
+
     let prevState: JokeType[] = getFavoriteJokes()
     if (prevState.some(j => j.id === id)) {
         prevState = prevState.filter(j => j.id !== id)
@@ -64,9 +78,12 @@ export const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {d
     }
     try {
         dispatch(deleteJokeAction({id}))
+        dispatch(setAppStatus({status: STATUS.SUCCEEDED}))
+        dispatch(setAppSuccess({success: 'Joke deleted'}))
     } catch (e: any) {
-        console.log(e)
-        // handleServerNetworkError(e, dispatch)
+        handleServerNetworkError(e, dispatch)
+    } finally {
+        dispatch(setAppStatus({status: STATUS.IDLE}))
     }
 })
 
@@ -74,20 +91,27 @@ export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number
     dispatch,
     getState
 }) => {
+    dispatch(setAppStatus({status:STATUS.LOADING}))
     dispatch(changeFavoriteField({id, isFavorite: true}))
+
     let state = getState() as RootStateType
     let joke: JokeType[] = state.jokes.jokes.filter(j => j.id === id)
     let prevState: JokeType[] = getFavoriteJokes()
     if (prevState.length) {
         if (prevState.some(j => j.id === id)) {
-            alert('така шутка вже добавлена')
+            dispatch(setAppStatus({status:STATUS.FAILED}))
+            dispatch(setAppError({error:'Joke is already in the list of favorites'}))
         } else {
             prevState = prevState.concat(joke)
             saveFavoriteJokes(prevState)
+            dispatch(setAppStatus({status:STATUS.SUCCEEDED}))
+            dispatch(setAppSuccess({success:'Joke has been added to the list of favorites'}))
         }
     } else {
         prevState = prevState.concat(joke)
         saveFavoriteJokes(prevState)
+        dispatch(setAppStatus({status:STATUS.SUCCEEDED}))
+        dispatch(setAppSuccess({success:'Joke has been added to the list of favorites'}))
     }
 })
 

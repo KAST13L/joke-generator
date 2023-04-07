@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {STATUS} from "../variables";
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
 export type InitialStateType = {
@@ -8,7 +9,7 @@ export type InitialStateType = {
 }
 
 const initialState: InitialStateType = {
-    status: 'loading',
+    status: STATUS.IDLE,
     error: null,
     success: null,
 }
