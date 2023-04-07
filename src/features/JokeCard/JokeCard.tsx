@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {JokeType} from "../../api/jokes-api";
 import {Box, Paper} from "@mui/material";
-import {deleteJoke, refreshJoke} from "../JokeCardsList/jokes-reducer";
+import {addToFavorite, deleteJoke, refreshJoke} from "../JokeCardsList/jokes-reducer";
 import {useAppDispatch} from "../../hooks/hooks";
 
 export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline}) => {
@@ -9,10 +9,14 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline}) => {
     const [isShow, setIsShow] = useState<boolean>(false)
 
     const deleteJokeHandler = () => {
-        dispatch(deleteJoke({id}))
+        dispatch(deleteJoke(id))
     }
     const refreshJokeHandler = () => {
         dispatch(refreshJoke(id))
+    }
+
+    const addToFavoriteHandler = () => {
+        dispatch(addToFavorite(id))
     }
 
     return (
@@ -40,7 +44,7 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline}) => {
             </Box>
             {isShow && <Box sx={{position: 'absolute', bottom: '5px'}}>
                 <button onClick={deleteJokeHandler}>delete</button>
-                <button>add</button>
+                <button onClick={addToFavoriteHandler} >add</button>
                 <button onClick={refreshJokeHandler}>refresh</button>
             </Box>}
         </Paper>

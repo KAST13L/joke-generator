@@ -1,19 +1,21 @@
 import {JokeType} from "../api/jokes-api";
 
-export const saveToStorage = (name: string, data: JokeType[]) => {
+export const FAVORITE = 'favorite'
+
+export const saveFavoriteJokes = (data: JokeType[]) => {
     if (!window || !window.localStorage) {
         return;
     }
-    window.localStorage.setItem(name, JSON.stringify(data));
+    window.localStorage.setItem(FAVORITE, JSON.stringify(data));
 };
 
-export const getFromStorage = (name: string) => {
+export const getFavoriteJokes = () => {
     if (!window || !window.localStorage) {
         return null;
     }
     try {
         // @ts-ignore
-        return JSON.parse(window.localStorage.getItem(name));
+        return JSON.parse(window.localStorage.getItem(FAVORITE));
     } catch (e) {
         console.error(e);
         return null;
