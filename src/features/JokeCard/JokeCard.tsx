@@ -4,7 +4,7 @@ import {Box, Paper} from "@mui/material";
 import {addToFavorite, deleteJoke, refreshJoke} from "../JokeCardsList/jokes-reducer";
 import {useAppDispatch} from "../../hooks/hooks";
 
-export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline}) => {
+export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline,favorite}) => {
     const dispatch = useAppDispatch()
     const [isShow, setIsShow] = useState<boolean>(false)
 
@@ -32,7 +32,8 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline}) => {
             <Box
                 sx={{display: 'flex', justifyContent: 'space-between', padding: '5px 0'}}>
                 <div>Type:{type}</div>
-                <div>ID: {id}</div>
+
+                <div>ID: {id} {favorite && <span style={{color:'red'}}>*</span>}</div>
             </Box>
             <Box sx={{margin: '5px'}}>
                 <div>Setup:</div>

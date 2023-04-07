@@ -6,16 +6,18 @@ const instance = axios.create({
 
 export const jokesAPI = {
     getJokes() {
-        return instance.get<JokeType[]>('ten')
+        return instance.get<JokeAPIType[]>('ten')
     },
     getOneJoke() {
-        return instance.get<JokeType>('random')
+        return instance.get<JokeAPIType>('random')
     }
 }
 
-export interface JokeType {
+export interface JokeAPIType {
     id: number
     type: string
     setup: string
     punchline: string
 }
+
+export type JokeType = JokeAPIType & {favorite: boolean}

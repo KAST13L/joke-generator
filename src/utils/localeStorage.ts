@@ -1,6 +1,5 @@
 import {JokeType} from "../api/jokes-api";
-
-export const FAVORITE = 'favorite'
+import {FAVORITE} from "../variables";
 
 export const saveFavoriteJokes = (data: JokeType[]) => {
     if (!window || !window.localStorage) {
@@ -15,7 +14,7 @@ export const getFavoriteJokes = () => {
     }
     try {
         // @ts-ignore
-        return JSON.parse(window.localStorage.getItem(FAVORITE));
+        return localStorage.getItem(FAVORITE) !== null ? JSON.parse(window.localStorage.getItem(FAVORITE)) : [];
     } catch (e) {
         console.error(e);
         return null;
