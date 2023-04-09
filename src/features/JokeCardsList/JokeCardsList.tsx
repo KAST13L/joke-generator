@@ -4,6 +4,7 @@ import {fetchJokes} from "./jokes-reducer";
 import {Box, Button, Grid} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
 import {STATUS} from "../../variables";
+import s from './JokeCardsList.module.scss'
 
 export const JokeCardsList = () => {
 
@@ -16,11 +17,11 @@ export const JokeCardsList = () => {
     }, [dispatch])
 
     return (
-        <Box sx={{display: 'flex-row', marginTop: '70px'}}>
+        <Box className={s.jokeCardsList}>
             <Grid container>
                 {jokes.map(j => <JokeCard key={j.id} {...j}/>)}
             </Grid>
-            <Box sx={{textAlign: 'center', padding: '30px'}}>
+            <Box className={s.button} >
                 <Button variant={'contained'} disabled={status === STATUS.LOADING} onClick={() => dispatch(fetchJokes())}>LOAD MORE</Button>
             </Box>
         </Box>

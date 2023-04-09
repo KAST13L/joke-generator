@@ -3,6 +3,7 @@ import {JokeCardsList} from "../features/JokeCardsList/JokeCardsList";
 import {Container, CssBaseline} from "@mui/material";
 import {ErrorSnackbar} from "../components/ErrorSnackbar/ErrorSnackbar";
 import {Header} from "../features/Header/Header";
+import s from './App.module.scss'
 
 export const App = () => {
     return (
@@ -10,8 +11,7 @@ export const App = () => {
             <CssBaseline/>
             <ErrorSnackbar/>
             <Header/>
-            <Container
-                sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <Container className={s.app}>
                 <JokeCardsList/>
             </Container>
         </>
