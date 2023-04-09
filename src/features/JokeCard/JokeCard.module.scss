@@ -1,0 +1,21 @@
+.jokeCard {
+  width: 220px;
+  position: relative;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 10px;
+
+  .topField {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+  }
+
+  .buttonsList {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    width: 200px;
+  }
+}

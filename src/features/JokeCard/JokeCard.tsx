@@ -7,6 +7,7 @@ import {STATUS} from "../../variables";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import s from './JokeCard.module.scss';
 
 export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favorite}) => {
     const dispatch = useAppDispatch()
@@ -26,37 +27,23 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
 
     return (
         <Paper elevation={8}
-               sx={{
-                   width: '220px',
-                   position: 'relative',
-                   padding: '10px',
-                   margin: '5px',
-                   borderRadius: '10px',
-                   backgroundColor: favorite ? '#f4acf8' : 'white'
-               }}
+               className={s.jokeCard}
+               sx={{backgroundColor: favorite ? '#f4acf8' : 'white'}}
                onMouseEnter={() => setIsShow(() => true)}
                onMouseLeave={() => setIsShow(() => false)}>
-            <Box
-                sx={{display: 'flex', justifyContent: 'space-between', padding: '5px 0'}}>
+            <Box className={s.topField}>
                 <div>Type:{type}</div>
-
                 <div>ID: {id}</div>
             </Box>
             <Box sx={{margin: '5px'}}>
                 <div>Setup:</div>
                 <div>{setup}</div>
             </Box>
-            <Box sx={{margin: '5px 5px 30px 5px'}}>
+            <Box sx={{margin: '5px 5px 40px 5px'}}>
                 <div>Punchline:</div>
                 <div>{punchline}</div>
             </Box>
-            {isShow && <Box sx={{
-                position: 'absolute',
-                bottom: '5px',
-                display: 'flex',
-                justifyContent: 'space-evenly',
-                width: '200px'
-            }}>
+            {isShow && <Box className={s.buttonsList}>
                 <Button disabled={status === STATUS.LOADING} variant={'contained'}
                         onClick={deleteJokeHandler}><DeleteIcon/></Button>
                 {!favorite &&
