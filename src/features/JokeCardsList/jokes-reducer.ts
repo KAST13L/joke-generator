@@ -6,10 +6,7 @@ import {MAX_JOKES_COUNT, STATUS} from "../../variables";
 import {setAppError, setAppStatus, setAppSuccess} from "../../app/app-reducer";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
 
-export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
-    dispatch,
-    getState
-}) => {
+export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {dispatch, getState}) => {
     dispatch(setAppStatus({status: STATUS.LOADING}))
 
     const res = await jokesAPI.getJokes()
@@ -87,10 +84,7 @@ export const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {d
     }
 })
 
-export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number, {
-    dispatch,
-    getState
-}) => {
+export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number, {dispatch, getState}) => {
     dispatch(setAppStatus({status:STATUS.LOADING}))
     dispatch(changeFavoriteField({id, isFavorite: true}))
 
@@ -102,10 +96,16 @@ export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number
             dispatch(setAppStatus({status:STATUS.FAILED}))
             dispatch(setAppError({error:'Joke is already in the list of favorites'}))
         } else {
-            prevState = prevState.concat(joke)
-            saveFavoriteJokes(prevState)
-            dispatch(setAppStatus({status:STATUS.SUCCEEDED}))
-            dispatch(setAppSuccess({success:'Joke has been added to the list of favorites'}))
+            if (prevState.length === MAX_JOKES_COUNT) {
+                dispatch(changeFavoriteField({id, isFavorite: false}))
+                dispatch(setAppStatus({status:STATUS.FAILED}))
+                dispatch(setAppError({error:`the maximum number of favorite jokes is ${MAX_JOKES_COUNT}`}))
+            } else {
+                prevState = prevState.concat(joke)
+                saveFavoriteJokes(prevState)
+                dispatch(setAppStatus({status:STATUS.SUCCEEDED}))
+                dispatch(setAppSuccess({success:'Joke has been added to the list of favorites'}))
+            }
         }
     } else {
         prevState = prevState.concat(joke)

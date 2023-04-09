@@ -14,6 +14,7 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
     const status = useAppSelector(state => state.app.status)
     const [isShow, setIsShow] = useState<boolean>(false)
 
+
     const deleteJokeHandler = () => {
         dispatch(deleteJoke(id))
     }
