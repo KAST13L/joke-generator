@@ -36,11 +36,11 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
                 <div>ID: {id}</div>
             </Box>
             <Box sx={{margin: '5px'}}>
-                <div>Setup:</div>
+                <div style={{color:"blueviolet"}}>Setup:</div>
                 <div>{setup}</div>
             </Box>
             <Box sx={{margin: '5px 5px 40px 5px'}}>
-                <div>Punchline:</div>
+                <div style={{color:"blueviolet"}}>Punchline:</div>
                 <div>{punchline}</div>
             </Box>
             {isShow && <Box className={s.buttonsList}>
