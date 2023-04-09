@@ -33,7 +33,7 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
                onMouseEnter={() => setIsShow(() => true)}
                onMouseLeave={() => setIsShow(() => false)}>
             <Box className={s.topField}>
-                <div>Type:{type}</div>
+                <div>Type: {type}</div>
                 <div>ID: {id}</div>
             </Box>
             <Box sx={{margin: '5px'}}>

@@ -2,7 +2,7 @@ import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {jokesAPI, JokeType} from "../../api/jokes-api";
 import {RootStateType} from "../../app/store";
 import {getFavoriteJokes, saveFavoriteJokes} from "../../utils/localeStorage";
-import {MAX_JOKES_COUNT, STATUS} from "../../variables";
+import {MAX_FAVORITE_JOKES_COUNT, STATUS} from "../../variables";
 import {setAppError, setAppStatus, setAppSuccess} from "../../app/app-reducer";
 import {handleServerAppError, handleServerNetworkError} from "../../utils/error-utils";
 
@@ -17,7 +17,7 @@ export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {disp
     const getIdsCurrentJokes = state.jokes.jokes.map(j => j.id)
     if (!state.jokes.jokes.length) {
         jokes = getFavoriteJokes().concat(jokes)
-        jokes = jokes.filter((j, index) => index < MAX_JOKES_COUNT)
+        jokes = jokes.filter((j, index) => index < MAX_FAVORITE_JOKES_COUNT)
     }
 
     let intersection = getIdsCurrentJokes.filter((x: any) => getIdsNewJokes.includes(x));
@@ -96,10 +96,10 @@ export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number
             dispatch(setAppStatus({status:STATUS.FAILED}))
             dispatch(setAppError({error:'Joke is already in the list of favorites'}))
         } else {
-            if (prevState.length === MAX_JOKES_COUNT) {
+            if (prevState.length === MAX_FAVORITE_JOKES_COUNT) {
                 dispatch(changeFavoriteField({id, isFavorite: false}))
                 dispatch(setAppStatus({status:STATUS.FAILED}))
-                dispatch(setAppError({error:`the maximum number of favorite jokes is ${MAX_JOKES_COUNT}`}))
+                dispatch(setAppError({error:`the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`}))
             } else {
                 prevState = prevState.concat(joke)
                 saveFavoriteJokes(prevState)
