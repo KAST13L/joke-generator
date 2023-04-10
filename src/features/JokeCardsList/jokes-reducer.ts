@@ -10,31 +10,31 @@ export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {disp
     dispatch(setAppStatus({status: STATUS.LOADING}))
 
     const res = await jokesAPI.getJokes()
-    let jokes: JokeType[] = res.data.map(j => ({...j, favorite: false}))
-    const getIdsNewJokes = jokes.map(j => j.id)
+    try {
+        let jokes: JokeType[] = res.data.map(j => ({...j, favorite: false}))
+        const getIdsNewJokes = jokes.map(j => j.id)
 
-    const state = getState() as RootStateType
-    const getIdsCurrentJokes = state.jokes.jokes.map(j => j.id)
-    if (!state.jokes.jokes.length) {
-        jokes = getFavoriteJokes().concat(jokes)
-        jokes = jokes.filter((j, index) => index < MAX_FAVORITE_JOKES_COUNT)
-    }
+        const state = getState() as RootStateType
+        const getIdsCurrentJokes = state.jokes.jokes.map(j => j.id)
+        if (!state.jokes.jokes.length) {
+            jokes = getFavoriteJokes().concat(jokes)
+            jokes = jokes.filter((j, index) => index < MAX_FAVORITE_JOKES_COUNT)
+        }
 
-    let intersection = getIdsCurrentJokes.filter((x: any) => getIdsNewJokes.includes(x));
+        let intersection = getIdsCurrentJokes.filter((x: any) => getIdsNewJokes.includes(x));
 
-    if (!intersection.length) {
-        try {
+        if (!intersection.length) {
             dispatch(setJokes({jokes}))
             dispatch(setAppStatus({status: STATUS.SUCCEEDED}))
             dispatch(setAppSuccess({success: 'Jokes received'}))
-        } catch (e: any) {
-            handleServerAppError(e, dispatch)
-        } finally {
-            dispatch(setAppStatus({status: STATUS.IDLE}))
+        } else {
+            dispatch(updateRepeatingIdsOfJokesList({repeatingJokesCount: intersection.length}))
+            dispatch(fetchJokes())
         }
-    } else {
-        dispatch(updateRepeatingIdsOfJokesList({repeatingJokesCount: intersection.length}))
-        dispatch(fetchJokes())
+    } catch (e: any) {
+        handleServerAppError(e, dispatch)
+    } finally {
+        dispatch(setAppStatus({status: STATUS.IDLE}))
     }
 })
 
