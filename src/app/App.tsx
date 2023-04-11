@@ -14,7 +14,6 @@ export const App = () => {
             <Container className={s.app}>
 
 
-
                 <JokeCardsList/>
             </Container>
         </>
