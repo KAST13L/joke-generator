@@ -13,6 +13,7 @@ export const App = () => {
             <Header/>
             <Container className={s.app}>
 
+
                 <JokeCardsList/>
             </Container>
         </>
