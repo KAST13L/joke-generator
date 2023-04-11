@@ -19,7 +19,6 @@ export const App = () => {
 
 
 
-
                 <JokeCardsList/>
             </Container>
         </>
