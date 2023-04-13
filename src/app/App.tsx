@@ -12,6 +12,7 @@ export const App = () => {
             <ErrorSnackbar/>
             <Header/>
 
+
             <Container className={s.app}>
                 <JokeCardsList/>
             </Container>
