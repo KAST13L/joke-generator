@@ -5,3 +5,4 @@ export const selectRepeatingIdsOfJokesList = ( state: RootStateType) => state.jo
 export const selectJokesTotalCount = ( state: RootStateType) => state.jokes.jokes.length
 export const selectError = ( state: RootStateType) => state.app.error
 export const selectSuccess = ( state: RootStateType) => state.app.success
+export const selectJokes = ( state: RootStateType) => state.jokes.jokes

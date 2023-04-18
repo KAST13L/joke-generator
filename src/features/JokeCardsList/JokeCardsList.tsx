@@ -2,15 +2,17 @@ import React, {useEffect} from 'react';
 import {JokeCard} from "../JokeCard/JokeCard";
 import {fetchJokes} from "./jokes-reducer";
 import {Box, Button, Grid} from "@mui/material";
-import {useAppDispatch, useAppSelector} from "../../hooks/hooks";
+import {useAppDispatch} from "../../hooks/hooks";
 import {STATUS} from "../../variables";
 import s from './JokeCardsList.module.scss'
+import {useSelector} from "react-redux";
+import {selectJokes, selectStatus} from "../../app/selectors";
 
 export const JokeCardsList = () => {
 
     const dispatch = useAppDispatch()
-    const jokes = useAppSelector((state) => state.jokes.jokes)
-    const status = useAppSelector(state => state.app.status)
+    const jokes = useSelector(selectJokes)
+    const status = useSelector(selectStatus)
 
     useEffect(() => {
         dispatch(fetchJokes())
@@ -21,8 +23,9 @@ export const JokeCardsList = () => {
             <Grid container>
                 {jokes.map(j => <JokeCard key={j.id} {...j}/>)}
             </Grid>
-            <Box className={s.button} >
-                <Button variant={'contained'} disabled={status === STATUS.LOADING} onClick={() => dispatch(fetchJokes())}>LOAD MORE</Button>
+            <Box className={s.button}>
+                <Button variant={'contained'} disabled={status === STATUS.LOADING}
+                        onClick={() => dispatch(fetchJokes())}>LOAD MORE</Button>
             </Box>
         </Box>
     );
