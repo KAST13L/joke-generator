@@ -1,16 +1,19 @@
 import React from 'react';
 import LinearProgress from "@mui/material/LinearProgress";
 import {AppBar, Box} from "@mui/material";
-import {useAppSelector} from "../../hooks/hooks";
 import s from "./Header.module.scss";
 import {useSelector} from "react-redux";
-import { selectStatus } from '../../app/selectors';
+import {
+    selectJokesTotalCount,
+    selectRepeatingIdsOfJokesList,
+    selectStatus
+} from '../../app/selectors';
 
 export const Header = () => {
 
     const status = useSelector(selectStatus)
-    const repeatingIdsOfJokesList = useAppSelector((state) => state.jokes.repeatingIdsOfJokesList)
-    const jokesTotalCount = useAppSelector(state => state.jokes.jokes.length)
+    const repeatingIdsOfJokesList = useSelector(selectRepeatingIdsOfJokesList)
+    const jokesTotalCount = useSelector(selectJokesTotalCount)
 
     return (
         <AppBar color='default' className={s.appBar}>
