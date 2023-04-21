@@ -1,4 +1,4 @@
-import {RootStateType} from "./store";
+import {RootStateType} from "../store/store";
 
 export const selectStatus = (state: RootStateType) => state.app.status;
 export const selectRepeatingIdsOfJokesList = ( state: RootStateType) => state.jokes.repeatingIdsOfJokesList

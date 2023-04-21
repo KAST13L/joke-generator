@@ -7,7 +7,7 @@ import {
     selectJokesTotalCount,
     selectRepeatingIdsOfJokesList,
     selectStatus
-} from '../../app/selectors';
+} from '../../app/selectors/selectors';
 
 export const Header = () => {
 

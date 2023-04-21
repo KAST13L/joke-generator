@@ -9,7 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import s from './JokeCard.module.scss';
 import {useSelector} from "react-redux";
-import {selectStatus} from "../../app/selectors";
+import {selectStatus} from "../../app/selectors/selectors";
 
 export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favorite}) => {
     const dispatch = useAppDispatch()

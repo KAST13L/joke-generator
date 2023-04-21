@@ -6,7 +6,7 @@ import {useAppDispatch} from "../../hooks/hooks";
 import {STATUS} from "../../variables";
 import s from './JokeCardsList.module.scss'
 import {useSelector} from "react-redux";
-import {selectJokes, selectStatus} from "../../app/selectors";
+import {selectJokes, selectStatus} from "../../app/selectors/selectors";
 
 export const JokeCardsList = () => {
 

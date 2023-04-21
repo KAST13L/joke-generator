@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux'
 import {configureStore} from "@reduxjs/toolkit";
-import {appReducer} from "./app-reducer";
-import {jokesReducer} from "../features/JokeCardsList/jokes-reducer";
+import {appReducer} from "../app-reducer";
+import {jokesReducer} from "../../features/JokeCardsList/jokes-reducer";
 
 
 const rootReducer = combineReducers({

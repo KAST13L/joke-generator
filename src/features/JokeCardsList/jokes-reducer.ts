@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {jokesAPI, JokeType} from "../../api/jokes-api";
-import {RootStateType} from "../../app/store";
+import {RootStateType} from "../../app/store/store";
 import {getFavoriteJokes, saveFavoriteJokes} from "../../utils/localeStorage";
 import {MAX_FAVORITE_JOKES_COUNT, STATUS} from "../../variables";
 import {setAppError, setAppStatus, setAppSuccess} from "../../app/app-reducer";
