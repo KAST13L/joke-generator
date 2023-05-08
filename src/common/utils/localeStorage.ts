@@ -20,3 +20,15 @@ export const getFavoriteJokes = () => {
         return null;
     }
 };
+
+export const deleteJokeFromLocaleStorage = (jokeId: number) => {
+    let prevState: JokeType[] = getFavoriteJokes()
+    if (prevState.some(j => j.id === jokeId)) {
+        prevState = prevState.filter(j => j.id !== jokeId)
+        saveFavoriteJokes(prevState)
+    }
+}
+
+export const addJokeToLocaleStorage = () => {
+
+}

@@ -1,7 +1,11 @@
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {jokesAPI, JokeType} from "../../common/api/jokes-api";
 import {RootStateType} from "../../app/store/store";
-import {getFavoriteJokes, saveFavoriteJokes} from "../../common/utils/localeStorage";
+import {
+    deleteJokeFromLocaleStorage,
+    getFavoriteJokes,
+    saveFavoriteJokes
+} from "../../common/utils/localeStorage";
 import {MAX_FAVORITE_JOKES_COUNT} from "../../common/utils/variables";
 import {setAppError, setAppSuccess} from "../../app/app-reducer";
 import {
@@ -9,7 +13,10 @@ import {
     handleServerNetworkError
 } from "../../common/utils/error-utils";
 
-const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {dispatch, getState}) => {
+const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
+    dispatch,
+    getState
+}) => {
 
     const res = await jokesAPI.getJokes()
     try {
@@ -39,11 +46,7 @@ const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {dispatch, g
 
 const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {dispatch}) => {
 
-    let prevState: JokeType[] = getFavoriteJokes()
-    if (prevState.some(j => j.id === id)) {
-        prevState = prevState.filter(j => j.id !== id)
-        saveFavoriteJokes(prevState)
-    }
+    deleteJokeFromLocaleStorage(id)
 
     let res = await jokesAPI.getOneJoke()
     if (res.data.id !== id) {
@@ -59,38 +62,27 @@ const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {di
 })
 
 const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch}) => {
-
-    let prevState: JokeType[] = getFavoriteJokes()
-    if (prevState.some(j => j.id === id)) {
-        prevState = prevState.filter(j => j.id !== id)
-        saveFavoriteJokes(prevState)
-    }
-    try {
-        dispatch(jokesActions.deleteJokeAction({id}))
-        dispatch(setAppSuccess({success: 'Joke deleted'}))
-    } catch (e: any) {
-        handleServerNetworkError(e, dispatch)
-    }
+    dispatch(setAppSuccess({success: 'Joke deleted'}))
+    return {id}
 })
 
-const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number, {dispatch, getState}) => {
+const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number, {
+    dispatch,
+    getState
+}) => {
     dispatch(jokesActions.changeFavoriteField({id, isFavorite: true}))
 
     let state = getState() as RootStateType
     let joke: JokeType[] = state.jokes.jokes.filter(j => j.id === id)
     let prevState: JokeType[] = getFavoriteJokes()
     if (prevState.length) {
-        if (prevState.some(j => j.id === id)) {
-            dispatch(setAppError({error: 'Joke is already in the list of favorites'}))
+        if (prevState.length === MAX_FAVORITE_JOKES_COUNT) {
+            dispatch(jokesActions.changeFavoriteField({id, isFavorite: false}))
+            dispatch(setAppError({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`}))
         } else {
-            if (prevState.length === MAX_FAVORITE_JOKES_COUNT) {
-                dispatch(jokesActions.changeFavoriteField({id, isFavorite: false}))
-                dispatch(setAppError({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`}))
-            } else {
-                prevState = prevState.concat(joke)
-                saveFavoriteJokes(prevState)
-                dispatch(setAppSuccess({success: 'Joke has been added to the list of favorites'}))
-            }
+            prevState = prevState.concat(joke)
+            saveFavoriteJokes(prevState)
+            dispatch(setAppSuccess({success: 'Joke has been added to the list of favorites'}))
         }
     } else {
         prevState = prevState.concat(joke)
@@ -125,6 +117,17 @@ export const slice = createSlice({
         updateRepeatingIdsOfJokesList(state, action: PayloadAction<{ repeatingJokesCount: number }>) {
             state.repeatingIdsOfJokesList += +action.payload.repeatingJokesCount
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(deleteJoke.fulfilled, (state, action) => {
+
+                deleteJokeFromLocaleStorage(action.payload.id)
+
+                state.jokes.filter(j => j.id !== action.payload.id)
+                const index = state.jokes.findIndex(j => j.id === action.payload.id)
+                state.jokes.splice(index, 1)
+            })
     }
 })
 
