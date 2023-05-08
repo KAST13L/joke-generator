@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import {JokeType} from "../../common/api/jokes-api";
 import {Box, Button, Paper} from "@mui/material";
-import {addToFavorite, deleteJoke, refreshJoke} from "../JokeCardsList/jokes-reducer";
-import {useAppDispatch} from "../../common/hooks/hooks";
 import {STATUS} from "../../common/utils/variables";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,23 +8,14 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import s from './JokeCard.module.scss';
 import {useSelector} from "react-redux";
 import {selectStatus} from "../../app/selectors/selectors";
+import {useActions} from "../../common/hooks/hooks";
+import {jokesThunks} from "../JokeCardsList/jokes-reducer";
 
 export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favorite}) => {
-    const dispatch = useAppDispatch()
     const status = useSelector(selectStatus)
     const [isShow, setIsShow] = useState<boolean>(false)
 
-
-    const deleteJokeHandler = () => {
-        dispatch(deleteJoke(id))
-    }
-    const refreshJokeHandler = () => {
-        dispatch(refreshJoke(id))
-    }
-
-    const addToFavoriteHandler = () => {
-        dispatch(addToFavorite(id))
-    }
+    const {addToFavorite, deleteJoke, refreshJoke} = useActions(jokesThunks)
 
     return (
         <Paper elevation={8}
@@ -48,12 +37,12 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
             </Box>
             {isShow && <Box className={s.buttonsList}>
                 <Button disabled={status === STATUS.LOADING} variant={'contained'}
-                        onClick={deleteJokeHandler}><DeleteIcon/></Button>
+                        onClick={() => deleteJoke(id)}><DeleteIcon/></Button>
                 {!favorite &&
                     <Button disabled={status === STATUS.LOADING} variant={'contained'}
-                            onClick={addToFavoriteHandler}><AddIcon/></Button>}
+                            onClick={() => addToFavorite(id)}><AddIcon/></Button>}
                 <Button disabled={status === STATUS.LOADING} variant={'contained'}
-                        onClick={refreshJokeHandler}><RefreshIcon/></Button>
+                        onClick={() => refreshJoke(id)}><RefreshIcon/></Button>
             </Box>}
         </Paper>
     );

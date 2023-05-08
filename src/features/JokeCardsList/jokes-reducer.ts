@@ -9,10 +9,7 @@ import {
     handleServerNetworkError
 } from "../../common/utils/error-utils";
 
-export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
-    dispatch,
-    getState
-}) => {
+const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {dispatch, getState}) => {
 
     const res = await jokesAPI.getJokes()
     try {
@@ -29,10 +26,10 @@ export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
         let intersection = getIdsCurrentJokes.filter((x: any) => getIdsNewJokes.includes(x));
 
         if (!intersection.length) {
-            dispatch(setJokes({jokes}))
+            dispatch(jokesActions.setJokes({jokes}))
             dispatch(setAppSuccess({success: 'Jokes received'}))
         } else {
-            dispatch(updateRepeatingIdsOfJokesList({repeatingJokesCount: intersection.length}))
+            dispatch(jokesActions.updateRepeatingIdsOfJokesList({repeatingJokesCount: intersection.length}))
             dispatch(fetchJokes())
         }
     } catch (e: any) {
@@ -40,7 +37,7 @@ export const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
     }
 })
 
-export const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {dispatch}) => {
+const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {dispatch}) => {
 
     let prevState: JokeType[] = getFavoriteJokes()
     if (prevState.some(j => j.id === id)) {
@@ -51,7 +48,7 @@ export const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: numb
     let res = await jokesAPI.getOneJoke()
     if (res.data.id !== id) {
         try {
-            dispatch(changeJoke({id, joke: {...res.data, favorite: false}}))
+            dispatch(jokesActions.changeJoke({id, joke: {...res.data, favorite: false}}))
             dispatch(setAppSuccess({success: 'Joke refreshed'}))
         } catch (e: any) {
             handleServerNetworkError(e, dispatch)
@@ -61,7 +58,7 @@ export const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: numb
     }
 })
 
-export const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch}) => {
+const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch}) => {
 
     let prevState: JokeType[] = getFavoriteJokes()
     if (prevState.some(j => j.id === id)) {
@@ -69,18 +66,15 @@ export const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {d
         saveFavoriteJokes(prevState)
     }
     try {
-        dispatch(deleteJokeAction({id}))
+        dispatch(jokesActions.deleteJokeAction({id}))
         dispatch(setAppSuccess({success: 'Joke deleted'}))
     } catch (e: any) {
         handleServerNetworkError(e, dispatch)
     }
 })
 
-export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number, {
-    dispatch,
-    getState
-}) => {
-    dispatch(changeFavoriteField({id, isFavorite: true}))
+const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number, {dispatch, getState}) => {
+    dispatch(jokesActions.changeFavoriteField({id, isFavorite: true}))
 
     let state = getState() as RootStateType
     let joke: JokeType[] = state.jokes.jokes.filter(j => j.id === id)
@@ -90,7 +84,7 @@ export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number
             dispatch(setAppError({error: 'Joke is already in the list of favorites'}))
         } else {
             if (prevState.length === MAX_FAVORITE_JOKES_COUNT) {
-                dispatch(changeFavoriteField({id, isFavorite: false}))
+                dispatch(jokesActions.changeFavoriteField({id, isFavorite: false}))
                 dispatch(setAppError({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`}))
             } else {
                 prevState = prevState.concat(joke)
@@ -105,14 +99,12 @@ export const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number
     }
 })
 
-const initialState = {
-    jokes: [] as JokeType[],
-    repeatingIdsOfJokesList: 0 as number
-}
-
 export const slice = createSlice({
     name: 'jokes',
-    initialState: initialState,
+    initialState: {
+        jokes: [] as JokeType[],
+        repeatingIdsOfJokesList: 0 as number
+    },
     reducers: {
         setJokes(state, action: PayloadAction<{ jokes: JokeType[] }>) {
             state.jokes = state.jokes.concat(action.payload.jokes)
@@ -136,11 +128,6 @@ export const slice = createSlice({
     }
 })
 
-export const {
-    changeFavoriteField,
-    updateRepeatingIdsOfJokesList,
-    changeJoke,
-    setJokes,
-    deleteJokeAction
-} = slice.actions
 export const jokesReducer = slice.reducer
+export const jokesActions = slice.actions
+export const jokesThunks = {fetchJokes, deleteJoke, addToFavorite, refreshJoke}
