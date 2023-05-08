@@ -1,5 +1,5 @@
 import {JokeType} from "../api/jokes-api";
-import {FAVORITE} from "../variables";
+import {FAVORITE} from "./variables";
 
 export const saveFavoriteJokes = (data: JokeType[]) => {
     if (!window || !window.localStorage) {

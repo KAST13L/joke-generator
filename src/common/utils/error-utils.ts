@@ -1,6 +1,6 @@
 import {Dispatch} from "redux";
-import {setAppError, setAppStatus} from "../app/app-reducer";
-import {STATUS} from "../variables";
+import {setAppError, setAppStatus} from "../../app/app-reducer";
+import {STATUS} from "./variables";
 import {ResponseServerErrorType} from "../api/jokes-api";
 
 export function handleServerAppError(data: ResponseServerErrorType, dispatch: Dispatch) {

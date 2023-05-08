@@ -2,8 +2,8 @@ import React, {useEffect} from 'react';
 import {JokeCard} from "../JokeCard/JokeCard";
 import {fetchJokes} from "./jokes-reducer";
 import {Box, Button, Grid} from "@mui/material";
-import {useAppDispatch} from "../../hooks/hooks";
-import {STATUS} from "../../variables";
+import {useAppDispatch} from "../../common/hooks/hooks";
+import {STATUS} from "../../common/utils/variables";
 import s from './JokeCardsList.module.scss'
 import {useSelector} from "react-redux";
 import {selectJokes, selectStatus} from "../../app/selectors/selectors";

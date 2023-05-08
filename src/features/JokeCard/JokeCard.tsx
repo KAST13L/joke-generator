@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {JokeType} from "../../api/jokes-api";
+import {JokeType} from "../../common/api/jokes-api";
 import {Box, Button, Paper} from "@mui/material";
 import {addToFavorite, deleteJoke, refreshJoke} from "../JokeCardsList/jokes-reducer";
-import {useAppDispatch} from "../../hooks/hooks";
-import {STATUS} from "../../variables";
+import {useAppDispatch} from "../../common/hooks/hooks";
+import {STATUS} from "../../common/utils/variables";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
