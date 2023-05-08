@@ -16,6 +16,7 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
     const [isShow, setIsShow] = useState<boolean>(false)
 
     const {addToFavorite, deleteJoke, refreshJoke} = useActions(jokesThunks)
+    const isLoading = status === STATUS.LOADING
 
     return (
         <Paper elevation={8}
@@ -35,15 +36,18 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
                 <div style={{color: "blueviolet"}}>Punchline:</div>
                 <div>{punchline}</div>
             </Box>
-            {isShow && <Box className={s.buttonsList}>
-                <Button disabled={status === STATUS.LOADING} variant={'contained'}
-                        onClick={() => deleteJoke(id)}><DeleteIcon/></Button>
-                {!favorite &&
-                    <Button disabled={status === STATUS.LOADING} variant={'contained'}
-                            onClick={() => addToFavorite(id)}><AddIcon/></Button>}
-                <Button disabled={status === STATUS.LOADING} variant={'contained'}
-                        onClick={() => refreshJoke(id)}><RefreshIcon/></Button>
-            </Box>}
+            {isShow &&
+                <Box className={s.buttonsList}>
+                    <Button disabled={isLoading} variant={'contained'}
+                            onClick={() => deleteJoke(id)}><DeleteIcon/></Button>
+                    {!favorite &&
+                        <Button disabled={isLoading} variant={'contained'}
+                                onClick={() => addToFavorite(id)}><AddIcon/></Button>
+                    }
+                    <Button disabled={isLoading} variant={'contained'}
+                            onClick={() => refreshJoke(id)}><RefreshIcon/></Button>
+                </Box>
+            }
         </Paper>
     );
 };
