@@ -18,6 +18,7 @@ const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
     getState
 }) => {
 
+
     const res = await jokesAPI.getJokes()
     try {
         let jokes: JokeType[] = res.data.map(j => ({...j, favorite: false}))
