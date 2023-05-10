@@ -1,5 +1,6 @@
 import {JokeType} from "../api/jokes-api";
 import {FAVORITE} from "./variables";
+import {Dispatch} from "redux";
 
 export const saveFavoriteJokes = (data: JokeType[]) => {
     if (!window || !window.localStorage) {
@@ -29,6 +30,6 @@ export const deleteJokeFromLocaleStorage = (jokeId: number) => {
     }
 }
 
-export const addJokeToLocaleStorage = () => {
+export const addJokeToLocaleStorage = (dispatch: Dispatch, joke: JokeType) => {
 
 }

@@ -11,7 +11,10 @@ import {selectStatus} from "../../app/selectors/selectors";
 import {useActions} from "../../common/hooks/hooks";
 import {jokesThunks} from "../JokeCardsList/jokes-reducer";
 
-export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favorite}) => {
+export const JokeCard: React.FC<JokeType> = (props) => {
+
+    const {type, setup, id, punchline, favorite} = props
+
     const status = useSelector(selectStatus)
     const [isShow, setIsShow] = useState<boolean>(false)
 
@@ -42,7 +45,7 @@ export const JokeCard: React.FC<JokeType> = ({type, setup, id, punchline, favori
                             onClick={() => deleteJoke(id)}><DeleteIcon/></Button>
                     {!favorite &&
                         <Button disabled={isLoading} variant={'contained'}
-                                onClick={() => addToFavorite(id)}><AddIcon/></Button>
+                                onClick={() => addToFavorite(props)}><AddIcon/></Button>
                     }
                     <Button disabled={isLoading} variant={'contained'}
                             onClick={() => refreshJoke(id)}><RefreshIcon/></Button>

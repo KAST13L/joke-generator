@@ -67,28 +67,18 @@ const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch
     return {id}
 })
 
-const addToFavorite = createAsyncThunk('jokes/addToFavorite', (id: number, {
-    dispatch,
-    getState
+const addToFavorite = createAsyncThunk('jokes/addToFavorite', (joke: JokeType, {
+    dispatch
 }) => {
-    dispatch(jokesActions.changeFavoriteField({id, isFavorite: true}))
-
-    let state = getState() as RootStateType
-    let joke: JokeType[] = state.jokes.jokes.filter(j => j.id === id)
     let prevState: JokeType[] = getFavoriteJokes()
-    if (prevState.length) {
-        if (prevState.length === MAX_FAVORITE_JOKES_COUNT) {
-            dispatch(jokesActions.changeFavoriteField({id, isFavorite: false}))
-            dispatch(setAppError({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`}))
-        } else {
-            prevState = prevState.concat(joke)
-            saveFavoriteJokes(prevState)
-            dispatch(setAppSuccess({success: 'Joke has been added to the list of favorites'}))
-        }
+
+    if (prevState.length && prevState.length === MAX_FAVORITE_JOKES_COUNT) {
+        dispatch(setAppError({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`}))
     } else {
-        prevState = prevState.concat(joke)
+        prevState = prevState.concat({...joke, favorite: true})
         saveFavoriteJokes(prevState)
         dispatch(setAppSuccess({success: 'Joke has been added to the list of favorites'}))
+        dispatch(jokesActions.changeFavoriteField({id: joke.id, isFavorite: true}))
     }
 })
 
@@ -122,12 +112,10 @@ export const slice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(deleteJoke.fulfilled, (state, action) => {
-
-                deleteJokeFromLocaleStorage(action.payload.id)
-
                 state.jokes.filter(j => j.id !== action.payload.id)
                 const index = state.jokes.findIndex(j => j.id === action.payload.id)
                 state.jokes.splice(index, 1)
+                deleteJokeFromLocaleStorage(action.payload.id)
             })
     }
 })
