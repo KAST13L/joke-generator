@@ -4,46 +4,36 @@ import {RootStateType} from "../../app/store/store";
 import {
     addJokeToLocaleStorage,
     deleteJokeFromLocaleStorage,
-    getFavoriteJokes
+    uploadFavoriteJokesAndDetermineIntersection
 } from "../../common/utils/localeStorage";
 import {MAX_FAVORITE_JOKES_COUNT} from "../../common/utils/variables";
-import {setAppSuccess} from "../../app/app-reducer";
-import {
-    handleServerAppError
-} from "../../common/utils/error-utils";
 
 const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
     dispatch,
-    getState
+    getState,
+    rejectWithValue
 }) => {
+    const state = getState() as RootStateType
     const res = await jokesAPI.getJokes()
-    try {
-        let jokes: JokeType[] = res.data.map(j => ({...j, favorite: false}))
-        const getIdsNewJokes = jokes.map(j => j.id)
 
-        const state = getState() as RootStateType
-        const getIdsCurrentJokes = state.jokes.jokes.map(j => j.id)
-        if (!state.jokes.jokes.length) {
-            jokes = getFavoriteJokes().concat(jokes)
-            jokes = jokes.filter((j, index) => index < MAX_FAVORITE_JOKES_COUNT)
-        }
+    const {
+        transformedJokes,
+        intersection
+    } = uploadFavoriteJokesAndDetermineIntersection(res.data, state.jokes.jokes)
 
-        let intersection = getIdsCurrentJokes.filter((x: any) => getIdsNewJokes.includes(x));
-
-        if (!intersection.length) {
-            dispatch(jokesActions.setJokes({jokes}))
-            dispatch(setAppSuccess({success: 'Jokes received'}))
-        } else {
-            dispatch(jokesActions.updateRepeatingIdsOfJokesList({repeatingJokesCount: intersection.length}))
-            dispatch(fetchJokes())
-        }
-    } catch (e: any) {
-        handleServerAppError(e, dispatch)
+    if (!intersection.length) {
+        return {jokes: transformedJokes}
+    } else {
+        dispatch(jokesActions.updateRepeatingIdsOfJokesList({repeatingJokesCount: intersection.length}))
+        fetchJokes()
+        return rejectWithValue({})
     }
 })
 
-const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {rejectWithValue,getState}) => {
-
+const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {
+    rejectWithValue,
+    getState
+}) => {
     const state = getState() as RootStateType
 
     let res = await jokesAPI.getOneJoke()
@@ -53,13 +43,12 @@ const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {re
         if (res.data) {
             return {id, joke: {...res.data, favorite: false}}
         } else {
-            return rejectWithValue({error:res.data})
+            return rejectWithValue({error: res.data})
         }
     }
 })
 
-const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch}) => {
-    dispatch(setAppSuccess({success: 'Joke deleted'}))
+const deleteJoke = createAsyncThunk('jokes/delete', async (id: number) => {
     return {id}
 })
 
@@ -79,9 +68,6 @@ export const slice = createSlice({
         repeatingIdsOfJokesList: 0 as number
     },
     reducers: {
-        setJokes(state, action: PayloadAction<{ jokes: JokeType[] }>) {
-            state.jokes = state.jokes.concat(action.payload.jokes)
-        },
         updateRepeatingIdsOfJokesList(state, action: PayloadAction<{ repeatingJokesCount: number }>) {
             state.repeatingIdsOfJokesList += +action.payload.repeatingJokesCount
         }
@@ -104,6 +90,9 @@ export const slice = createSlice({
                     state.jokes.splice(index, 1, action.payload.joke)
                     deleteJokeFromLocaleStorage(action.payload.id)
                 }
+            })
+            .addCase(fetchJokes.fulfilled, (state, action) => {
+                state.jokes = state.jokes.concat(action.payload.jokes)
             })
     }
 })

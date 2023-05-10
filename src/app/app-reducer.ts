@@ -34,8 +34,14 @@ export const slice = createSlice({
             .addCase(jokesThunks.addToFavorite.fulfilled, (state) => {
                 state.success = 'Joke has been added to the list of favorites'
             })
+            .addCase(jokesThunks.fetchJokes.fulfilled, (state) => {
+                state.success = 'Jokes received'
+            })
             .addCase(jokesThunks.refreshJoke.fulfilled, (state) => {
                 state.success = 'Joke refreshed'
+            })
+            .addCase(jokesThunks.deleteJoke.fulfilled, (state) => {
+                state.success = 'Joke deleted'
             })
             .addMatcher(
                 (action) => action.type.endsWith("/pending"),

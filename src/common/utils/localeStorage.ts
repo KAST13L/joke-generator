@@ -1,4 +1,4 @@
-import {JokeType} from "../api/jokes-api";
+import {JokeAPIType, JokeType} from "../api/jokes-api";
 import {FAVORITE, MAX_FAVORITE_JOKES_COUNT} from "./variables";
 
 export const saveFavoriteJokes = (data: JokeType[]) => {
@@ -39,4 +39,23 @@ export const addJokeToLocaleStorage = (joke: JokeType) => {
         saveFavoriteJokes(prevState)
         return {isDone: true}
     }
+}
+
+export const uploadFavoriteJokesAndDetermineIntersection = (jokes: JokeAPIType[], currentJokes: JokeType[]) => {
+    debugger
+    let transformedJokes: JokeAPIType[] = jokes.map(j => ({...j, favorite: false}))
+    const getIdsNewJokes = transformedJokes.map(j => j.id)
+    const getIdsCurrentJokes = currentJokes.map(j => j.id)
+
+    if (!currentJokes.length) {
+        transformedJokes = getFavoriteJokes().concat(transformedJokes)
+        transformedJokes = transformedJokes.filter((j, index) => index < MAX_FAVORITE_JOKES_COUNT)
+    }
+
+    let intersection = getIdsCurrentJokes.filter((x: any) => getIdsNewJokes.includes(x));
+
+    return {
+        transformedJokes,
+        intersection
+    } as { transformedJokes: JokeType[], intersection: number[] }
 }
