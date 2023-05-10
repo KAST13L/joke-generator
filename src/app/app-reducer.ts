@@ -41,8 +41,8 @@ export const slice = createSlice({
                 (state, action) => {
                     const { payload, error } = action;
                     if (payload) {
-                        state.error = payload.data.messages.length
-                            ? payload.data.messages[0]
+                        state.error = payload.error
+                            ? payload.error
                             : "some error occurred";
                     } else {
                         state.error = error.message ? error.message : "some error occurred";

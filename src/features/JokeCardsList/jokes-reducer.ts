@@ -7,7 +7,7 @@ import {
     saveFavoriteJokes
 } from "../../common/utils/localeStorage";
 import {MAX_FAVORITE_JOKES_COUNT} from "../../common/utils/variables";
-import {setAppError, setAppSuccess} from "../../app/app-reducer";
+import {setAppSuccess} from "../../app/app-reducer";
 import {
     handleServerAppError,
     handleServerNetworkError
@@ -68,17 +68,17 @@ const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch
 })
 
 const addToFavorite = createAsyncThunk('jokes/addToFavorite', (joke: JokeType, {
-    dispatch
+    dispatch, rejectWithValue
 }) => {
     let prevState: JokeType[] = getFavoriteJokes()
 
     if (prevState.length && prevState.length === MAX_FAVORITE_JOKES_COUNT) {
-        dispatch(setAppError({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`}))
+        return rejectWithValue({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`})
     } else {
         prevState = prevState.concat({...joke, favorite: true})
         saveFavoriteJokes(prevState)
         dispatch(setAppSuccess({success: 'Joke has been added to the list of favorites'}))
-        dispatch(jokesActions.changeFavoriteField({id: joke.id, isFavorite: true}))
+        return {id: joke.id}
     }
 })
 
@@ -116,6 +116,10 @@ export const slice = createSlice({
                 const index = state.jokes.findIndex(j => j.id === action.payload.id)
                 state.jokes.splice(index, 1)
                 deleteJokeFromLocaleStorage(action.payload.id)
+            })
+            .addCase(addToFavorite.fulfilled, (state,action) => {
+                const index = state.jokes.findIndex(j => j.id === action.payload?.id)
+                state.jokes[index].favorite = true
             })
     }
 })
