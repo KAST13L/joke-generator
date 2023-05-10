@@ -2,23 +2,20 @@ import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {jokesAPI, JokeType} from "../../common/api/jokes-api";
 import {RootStateType} from "../../app/store/store";
 import {
+    addJokeToLocaleStorage,
     deleteJokeFromLocaleStorage,
-    getFavoriteJokes,
-    saveFavoriteJokes
+    getFavoriteJokes
 } from "../../common/utils/localeStorage";
 import {MAX_FAVORITE_JOKES_COUNT} from "../../common/utils/variables";
 import {setAppSuccess} from "../../app/app-reducer";
 import {
-    handleServerAppError,
-    handleServerNetworkError
+    handleServerAppError
 } from "../../common/utils/error-utils";
 
 const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
     dispatch,
     getState
 }) => {
-
-
     const res = await jokesAPI.getJokes()
     try {
         let jokes: JokeType[] = res.data.map(j => ({...j, favorite: false}))
@@ -45,20 +42,19 @@ const fetchJokes = createAsyncThunk('jokes/fetchJokes', async (arg, {
     }
 })
 
-const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {dispatch}) => {
+const refreshJoke = createAsyncThunk('jokes/refreshJoke', async (id: number, {rejectWithValue,getState}) => {
 
-    deleteJokeFromLocaleStorage(id)
+    const state = getState() as RootStateType
 
     let res = await jokesAPI.getOneJoke()
-    if (res.data.id !== id) {
-        try {
-            dispatch(jokesActions.changeJoke({id, joke: {...res.data, favorite: false}}))
-            dispatch(setAppSuccess({success: 'Joke refreshed'}))
-        } catch (e: any) {
-            handleServerNetworkError(e, dispatch)
-        }
+    if (state.jokes.jokes.some(j => j.id === res.data.id)) {
+        refreshJoke(id)
     } else {
-        dispatch(refreshJoke(id))
+        if (res.data) {
+            return {id, joke: {...res.data, favorite: false}}
+        } else {
+            return rejectWithValue({error:res.data})
+        }
     }
 })
 
@@ -67,18 +63,12 @@ const deleteJoke = createAsyncThunk('jokes/delete', async (id: number, {dispatch
     return {id}
 })
 
-const addToFavorite = createAsyncThunk('jokes/addToFavorite', (joke: JokeType, {
-    dispatch, rejectWithValue
-}) => {
-    let prevState: JokeType[] = getFavoriteJokes()
-
-    if (prevState.length && prevState.length === MAX_FAVORITE_JOKES_COUNT) {
-        return rejectWithValue({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`})
-    } else {
-        prevState = prevState.concat({...joke, favorite: true})
-        saveFavoriteJokes(prevState)
-        dispatch(setAppSuccess({success: 'Joke has been added to the list of favorites'}))
+const addToFavorite = createAsyncThunk('jokes/addToFavorite', (joke: JokeType, {rejectWithValue}) => {
+    const result = addJokeToLocaleStorage(joke)
+    if (result.isDone) {
         return {id: joke.id}
+    } else {
+        return rejectWithValue({error: `the maximum number of favorite jokes is ${MAX_FAVORITE_JOKES_COUNT}`})
     }
 })
 
@@ -92,19 +82,6 @@ export const slice = createSlice({
         setJokes(state, action: PayloadAction<{ jokes: JokeType[] }>) {
             state.jokes = state.jokes.concat(action.payload.jokes)
         },
-        deleteJokeAction(state, action: PayloadAction<{ id: number }>) {
-            state.jokes.filter(j => j.id !== action.payload.id)
-            const index = state.jokes.findIndex(j => j.id === action.payload.id)
-            state.jokes.splice(index, 1)
-        },
-        changeFavoriteField(state, action: PayloadAction<{ id: number, isFavorite: boolean }>) {
-            const index = state.jokes.findIndex(j => j.id === action.payload.id)
-            state.jokes[index].favorite = action.payload.isFavorite
-        },
-        changeJoke(state, action: PayloadAction<{ joke: JokeType, id: number }>) {
-            const index = state.jokes.findIndex(j => j.id === action.payload.id)
-            state.jokes.splice(index, 1, action.payload.joke)
-        },
         updateRepeatingIdsOfJokesList(state, action: PayloadAction<{ repeatingJokesCount: number }>) {
             state.repeatingIdsOfJokesList += +action.payload.repeatingJokesCount
         }
@@ -117,9 +94,16 @@ export const slice = createSlice({
                 state.jokes.splice(index, 1)
                 deleteJokeFromLocaleStorage(action.payload.id)
             })
-            .addCase(addToFavorite.fulfilled, (state,action) => {
+            .addCase(addToFavorite.fulfilled, (state, action) => {
                 const index = state.jokes.findIndex(j => j.id === action.payload?.id)
                 state.jokes[index].favorite = true
+            })
+            .addCase(refreshJoke.fulfilled, (state, action) => {
+                if (action.payload) {
+                    const index = state.jokes.findIndex(j => j.id === action.payload?.id)
+                    state.jokes.splice(index, 1, action.payload.joke)
+                    deleteJokeFromLocaleStorage(action.payload.id)
+                }
             })
     }
 })

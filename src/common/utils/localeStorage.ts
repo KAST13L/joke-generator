@@ -1,6 +1,5 @@
 import {JokeType} from "../api/jokes-api";
-import {FAVORITE} from "./variables";
-import {Dispatch} from "redux";
+import {FAVORITE, MAX_FAVORITE_JOKES_COUNT} from "./variables";
 
 export const saveFavoriteJokes = (data: JokeType[]) => {
     if (!window || !window.localStorage) {
@@ -30,6 +29,14 @@ export const deleteJokeFromLocaleStorage = (jokeId: number) => {
     }
 }
 
-export const addJokeToLocaleStorage = (dispatch: Dispatch, joke: JokeType) => {
+export const addJokeToLocaleStorage = (joke: JokeType) => {
+    let prevState: JokeType[] = getFavoriteJokes()
 
+    if (prevState.length && prevState.length === MAX_FAVORITE_JOKES_COUNT) {
+        return {isDone: false}
+    } else {
+        prevState = prevState.concat({...joke, favorite: true})
+        saveFavoriteJokes(prevState)
+        return {isDone: true}
+    }
 }

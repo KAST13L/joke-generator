@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {STATUS} from "../common/utils/variables";
+import {jokesThunks} from "../features/JokeCardsList/jokes-reducer";
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
 export type InitialStateType = {
@@ -30,6 +31,12 @@ export const slice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(jokesThunks.addToFavorite.fulfilled, (state) => {
+                state.success = 'Joke has been added to the list of favorites'
+            })
+            .addCase(jokesThunks.refreshJoke.fulfilled, (state) => {
+                state.success = 'Joke refreshed'
+            })
             .addMatcher(
                 (action) => action.type.endsWith("/pending"),
                 (state) => {
@@ -41,9 +48,7 @@ export const slice = createSlice({
                 (state, action) => {
                     const { payload, error } = action;
                     if (payload) {
-                        state.error = payload.error
-                            ? payload.error
-                            : "some error occurred";
+                        state.error = payload.message ? payload.message : payload.error;
                     } else {
                         state.error = error.message ? error.message : "some error occurred";
                     }
