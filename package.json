@@ -60,6 +60,7 @@
     ]
   },
   "devDependencies": {
+    "prettier": "2.8.8",
     "typescript-plugin-css-modules": "^5.0.0"
   }
 }
