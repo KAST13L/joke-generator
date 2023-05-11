@@ -27,7 +27,6 @@ const fetchJokes = createAsyncThunk(
     }
   }
 );
-
 const refreshJoke = createAsyncThunk(
   "jokes/refreshJoke",
   async (id: number, { rejectWithValue, getState, dispatch }) => {
@@ -45,7 +44,6 @@ const refreshJoke = createAsyncThunk(
     }
   }
 );
-
 const deleteJoke = createAsyncThunk("jokes/delete", async (id: number) => {
   return { id };
 });
