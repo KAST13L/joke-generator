@@ -14,9 +14,9 @@ export const getFavoriteJokes = () => {
     return null;
   }
   try {
-    // @ts-ignore
     return localStorage.getItem(FAVORITE) !== null
-      ? JSON.parse(window.localStorage.getItem(FAVORITE))
+      ? // @ts-ignore
+        JSON.parse(window.localStorage.getItem(FAVORITE))
       : [];
   } catch (e) {
     console.error(e);

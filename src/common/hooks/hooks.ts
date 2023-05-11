@@ -9,7 +9,9 @@ import {
 import { useMemo } from "react";
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
+
 export const useAppSelector: TypedUseSelectorHook<RootStateType> = useSelector;
+
 export const useActions = <
   Actions extends ActionCreatorsMapObject = ActionCreatorsMapObject
 >(
