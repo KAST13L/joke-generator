@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { JokeType } from "../../common/api/jokes-api";
-import { Box, Button, Paper } from "@mui/material";
+import { Box, Button, Paper, Tooltip } from "@mui/material";
 import { STATUS } from "../../common/utils/variables";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -20,6 +20,16 @@ export const JokeCard: React.FC<JokeType> = (props) => {
 
   const { toggleIsFavorite, deleteJoke, refreshJoke } = useActions(jokesThunks);
   const isLoading = status === STATUS.LOADING;
+
+  const buttonForJoke = (title: string, icon: any, callback: any) => {
+    return (
+      <Tooltip title={title} arrow>
+        <Button variant={"contained"} disabled={isLoading} onClick={callback}>
+          {icon}
+        </Button>
+      </Tooltip>
+    );
+  };
 
   return (
     <Paper
@@ -43,7 +53,18 @@ export const JokeCard: React.FC<JokeType> = (props) => {
       </Box>
       {isShow && (
         <Box className={s.buttonsList}>
-          <Button
+          {buttonForJoke("delete", <DeleteIcon />, () => deleteJoke(id))}
+          {favorite
+            ? buttonForJoke(
+                "remove from favorite",
+                <FavoriteBorderIcon />,
+                () => toggleIsFavorite(props)
+              )
+            : buttonForJoke("add to favorite", <FavoriteIcon />, () =>
+                toggleIsFavorite(props)
+              )}
+          {buttonForJoke("refresh", <RefreshIcon />, () => refreshJoke(id))}
+          {/*<Button
             disabled={isLoading}
             variant={"contained"}
             onClick={() => deleteJoke(id)}
@@ -63,7 +84,7 @@ export const JokeCard: React.FC<JokeType> = (props) => {
             onClick={() => refreshJoke(id)}
           >
             <RefreshIcon />
-          </Button>
+          </Button>*/}
         </Box>
       )}
     </Paper>
