@@ -29,7 +29,7 @@ export const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(jokesThunks.addToFavorite.fulfilled, (state) => {
+      .addCase(jokesThunks.toggleIsFavorite.fulfilled, (state) => {
         state.success = "Favorite list changed";
       })
       .addCase(jokesThunks.fetchJokes.fulfilled, (state) => {

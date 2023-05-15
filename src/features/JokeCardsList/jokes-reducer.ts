@@ -107,6 +107,6 @@ export const jokesActions = slice.actions;
 export const jokesThunks = {
   fetchJokes,
   deleteJoke,
-  addToFavorite: toggleIsFavorite,
+  toggleIsFavorite,
   refreshJoke,
 };

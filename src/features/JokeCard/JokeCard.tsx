@@ -18,7 +18,7 @@ export const JokeCard: React.FC<JokeType> = (props) => {
   const status = useSelector(selectStatus);
   const [isShow, setIsShow] = useState<boolean>(false);
 
-  const { addToFavorite, deleteJoke, refreshJoke } = useActions(jokesThunks);
+  const { toggleIsFavorite, deleteJoke, refreshJoke } = useActions(jokesThunks);
   const isLoading = status === STATUS.LOADING;
 
   return (
@@ -53,7 +53,7 @@ export const JokeCard: React.FC<JokeType> = (props) => {
           <Button
             disabled={isLoading}
             variant={"contained"}
-            onClick={() => addToFavorite(props)}
+            onClick={() => toggleIsFavorite(props)}
           >
             {favorite ? <FavoriteBorderIcon /> : <FavoriteIcon />}
           </Button>
