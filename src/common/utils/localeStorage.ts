@@ -32,11 +32,14 @@ export const deleteJokeFromLocaleStorage = (jokeId: number) => {
   }
 };
 
-export const addJokeToLocaleStorage = (joke: JokeType) => {
+export const addOrRemoveJokeFromLocaleStorage = (joke: JokeType) => {
   let prevState: JokeType[] = getFavoriteJokes();
 
   if (prevState.length && prevState.length === MAX_FAVORITE_JOKES_COUNT) {
     return { isDone: false };
+  } else if (joke.favorite) {
+    deleteJokeFromLocaleStorage(joke.id);
+    return { isDone: true };
   } else {
     prevState = prevState.concat({ ...joke, favorite: true });
     saveFavoriteJokes(prevState);

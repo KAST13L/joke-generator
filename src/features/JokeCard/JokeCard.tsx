@@ -3,8 +3,9 @@ import { JokeType } from "../../common/api/jokes-api";
 import { Box, Button, Paper } from "@mui/material";
 import { STATUS } from "../../common/utils/variables";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import s from "./JokeCard.module.scss";
 import { useSelector } from "react-redux";
 import { selectStatus } from "../../app/selectors/selectors";
@@ -49,15 +50,13 @@ export const JokeCard: React.FC<JokeType> = (props) => {
           >
             <DeleteIcon />
           </Button>
-          {!favorite && (
-            <Button
-              disabled={isLoading}
-              variant={"contained"}
-              onClick={() => addToFavorite(props)}
-            >
-              <AddIcon />
-            </Button>
-          )}
+          <Button
+            disabled={isLoading}
+            variant={"contained"}
+            onClick={() => addToFavorite(props)}
+          >
+            {favorite ? <FavoriteBorderIcon /> : <FavoriteIcon />}
+          </Button>
           <Button
             disabled={isLoading}
             variant={"contained"}

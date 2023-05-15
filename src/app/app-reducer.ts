@@ -9,15 +9,13 @@ export type InitialStateType = {
   success: string | null;
 };
 
-const initialState: InitialStateType = {
-  status: STATUS.IDLE,
-  error: null,
-  success: null,
-};
-
 export const slice = createSlice({
   name: "app",
-  initialState: initialState,
+  initialState: {
+    status: STATUS.IDLE,
+    error: null,
+    success: null,
+  } as InitialStateType,
   reducers: {
     setAppError(state, action: PayloadAction<{ error: string | null }>) {
       state.error = action.payload.error;
@@ -32,7 +30,7 @@ export const slice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(jokesThunks.addToFavorite.fulfilled, (state) => {
-        state.success = "Joke has been added to the list of favorites";
+        state.success = "Favorite list changed";
       })
       .addCase(jokesThunks.fetchJokes.fulfilled, (state) => {
         state.success = "Jokes received";

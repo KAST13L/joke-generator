@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { jokesAPI, JokeType } from "../../common/api/jokes-api";
 import { RootStateType } from "../../app/store/store";
 import {
-  addJokeToLocaleStorage,
+  addOrRemoveJokeFromLocaleStorage,
   deleteJokeFromLocaleStorage,
   uploadFavoriteJokesAndDetermineIntersection,
 } from "../../common/utils/localeStorage";
@@ -47,10 +47,10 @@ const refreshJoke = createAsyncThunk(
 const deleteJoke = createAsyncThunk("jokes/delete", async (id: number) => {
   return { id };
 });
-const addToFavorite = createAsyncThunk(
+const toggleIsFavorite = createAsyncThunk(
   "jokes/addToFavorite",
   (joke: JokeType, { rejectWithValue }) => {
-    const result = addJokeToLocaleStorage(joke);
+    const result = addOrRemoveJokeFromLocaleStorage(joke);
     if (result.isDone) {
       return { id: joke.id };
     } else {
@@ -83,9 +83,9 @@ export const slice = createSlice({
         state.jokes.splice(index, 1);
         deleteJokeFromLocaleStorage(action.payload.id);
       })
-      .addCase(addToFavorite.fulfilled, (state, action) => {
+      .addCase(toggleIsFavorite.fulfilled, (state, action) => {
         const index = state.jokes.findIndex((j) => j.id === action.payload?.id);
-        state.jokes[index].favorite = true;
+        state.jokes[index].favorite = !state.jokes[index].favorite;
       })
       .addCase(refreshJoke.fulfilled, (state, action) => {
         if (action.payload) {
@@ -107,6 +107,6 @@ export const jokesActions = slice.actions;
 export const jokesThunks = {
   fetchJokes,
   deleteJoke,
-  addToFavorite,
+  addToFavorite: toggleIsFavorite,
   refreshJoke,
 };
