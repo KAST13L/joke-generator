@@ -19,7 +19,7 @@ export const useActions = <
 ): BoundActions<Actions> => {
   const dispatch = useAppDispatch();
 
-  return useMemo(() => bindActionCreators(actions, dispatch), []);
+  return useMemo(() => bindActionCreators(actions, dispatch), [actions, dispatch]);
 };
 
 // Types
