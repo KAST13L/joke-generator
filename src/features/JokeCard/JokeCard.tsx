@@ -21,7 +21,11 @@ export const JokeCard: React.FC<JokeType> = (props) => {
   const { toggleIsFavorite, deleteJoke, refreshJoke } = useActions(jokesThunks);
   const isLoading = status === STATUS.LOADING;
 
-  const buttonForJoke = (title: string, icon: any, callback: any) => {
+  const buttonForJoke = (
+    title: string,
+    icon: JSX.Element,
+    callback: () => void
+  ) => {
     return (
       <Tooltip title={title} arrow>
         <Button variant={"contained"} disabled={isLoading} onClick={callback}>
@@ -54,37 +58,12 @@ export const JokeCard: React.FC<JokeType> = (props) => {
       {isShow && (
         <Box className={s.buttonsList}>
           {buttonForJoke("delete", <DeleteIcon />, () => deleteJoke(id))}
-          {favorite
-            ? buttonForJoke(
-                "remove from favorite",
-                <FavoriteBorderIcon />,
-                () => toggleIsFavorite(props)
-              )
-            : buttonForJoke("add to favorite", <FavoriteIcon />, () =>
-                toggleIsFavorite(props)
-              )}
+          {buttonForJoke(
+            favorite ? "remove from favorite" : "add to favorite",
+            favorite ? <FavoriteBorderIcon /> : <FavoriteIcon />,
+            () => toggleIsFavorite(props)
+          )}
           {buttonForJoke("refresh", <RefreshIcon />, () => refreshJoke(id))}
-          {/*<Button
-            disabled={isLoading}
-            variant={"contained"}
-            onClick={() => deleteJoke(id)}
-          >
-            <DeleteIcon />
-          </Button>
-          <Button
-            disabled={isLoading}
-            variant={"contained"}
-            onClick={() => toggleIsFavorite(props)}
-          >
-            {favorite ? <FavoriteBorderIcon /> : <FavoriteIcon />}
-          </Button>
-          <Button
-            disabled={isLoading}
-            variant={"contained"}
-            onClick={() => refreshJoke(id)}
-          >
-            <RefreshIcon />
-          </Button>*/}
         </Box>
       )}
     </Paper>
