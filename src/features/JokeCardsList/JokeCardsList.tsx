@@ -31,7 +31,7 @@ export const JokeCardsList = () => {
           disabled={status === STATUS.LOADING}
           onClick={() => fetchJokes()}
         >
-          LOAD MOREE
+          LOAD MORE
         </Button>
       </Box>
     </Box>
