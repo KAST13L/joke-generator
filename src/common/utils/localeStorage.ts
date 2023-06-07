@@ -44,6 +44,7 @@ export const addOrRemoveJokeFromLocaleStorage = (joke: JokeType) => {
     prevState = prevState.concat({ ...joke, favorite: true });
     saveFavoriteJokes(prevState);
     return { isDone: true };
+
   }
 };
 
