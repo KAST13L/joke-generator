@@ -1,5 +1,5 @@
 export const FAVORITE = "favorite";
-export const MAX_FAVORITE_JOKES_COUNT = 11;
+export const MAX_FAVORITE_JOKES_COUNT = 12;
 export enum STATUS {
   IDLE = "idle",
   LOADING = "loading",
